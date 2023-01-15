@@ -2,8 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import { default as dotenv } from "dotenv";
 import configViewEngine from "./config/viewEngine";
-import { engine } from "express-handlebars";
-import path from "path";
+import route from "./routes";
 dotenv.config();
 
 const app = express();
@@ -20,9 +19,7 @@ configViewEngine(app);
 app.use(morgan("combined"));
 
 // routes
-app.get("/", (req, res) => {
-  res.render("home");
-});
+route(app);
 
 // listenning
 app.listen(port, () => {
