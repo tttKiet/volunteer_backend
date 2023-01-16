@@ -1,0 +1,31 @@
+<div class="container mt-5">
+  <div class="row">
+    <h2
+      class="bg-primary px-4 py-2"
+      style="color: aliceblue; border-radius: 4px;"
+    >Account</h2>
+  </div>
+  <div class="row">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">User</th>
+          <th scope="col">Password</th>
+          <th scope="col">Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each accounts}}
+          <tr>
+            <th scope="row">{{@index}}</th>
+            <td>{{this.user}}</td>
+            <td>{{this.password}}</td>
+            <td>{{this.type}}</td>
+          </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+  </div>
+</div>

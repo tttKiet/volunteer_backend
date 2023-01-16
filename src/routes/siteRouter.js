@@ -4,6 +4,6 @@ import { siteController } from "../app/controllers";
 const router = express.Router();
 
 router.get("/", siteController.index);
-router.get("/about", siteController.about);
+router.get("/admin/create-account", siteController.about);
 
 export default router;

@@ -2,6 +2,8 @@ import express from "express";
 import morgan from "morgan";
 import { default as dotenv } from "dotenv";
 import configViewEngine from "./config/viewEngine";
+import db from "./config/db";
+import { configHeader } from "./app/middleWares";
 import route from "./routes";
 dotenv.config();
 
@@ -11,9 +13,13 @@ const port = process.env.PORT || 8080;
 // config data resquest
 app.use(express.urlencoded());
 app.use(express.json());
+app.use(configHeader);
 
 // config view engine
 configViewEngine(app);
+
+// connect  database
+db.connect();
 
 // morgan logger
 app.use(morgan("combined"));
