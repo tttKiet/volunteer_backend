@@ -4,18 +4,26 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkInsert(
-      "accounts",
+      "Users",
       [
         {
-          user: "B2014754",
+          id: "B2014754",
           password: "123",
-          type: "admin",
+          name: "Bùi Tuấn Kiệt",
+          email: "kietb2014754@student.ctu.edu.vn",
+          faculty: "CNTT & TT",
+          className: "20V7A3",
+          type: "user",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
-          user: "B2014755",
+          id: "B2014755",
           password: "123",
+          name: "Bùi Tuấn Kiệt 2",
+          email: "kietb2014754@student.ctu.edu.vn",
+          faculty: "CNTT & TT",
+          className: "20V7A3",
           type: "admin",
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -32,6 +40,5 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    await queryInterface.bulkDelete("accounts", null, {});
   },
 };

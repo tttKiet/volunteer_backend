@@ -27,6 +27,10 @@ app.use(morgan("combined"));
 // routes
 route(app);
 
+process.on("uncaughtException", (err, origin) => {
+  console.log(err);
+});
+
 // listenning
 app.listen(port, () => {
   console.log(`Example app listening on port  http://localhost:${port}`);
