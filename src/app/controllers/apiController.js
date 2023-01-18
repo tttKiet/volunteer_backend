@@ -3,10 +3,8 @@ import { apiUserService, apiPostService } from "../../services";
 class apiController {
   // [POST] /api/v1/login
   async handleLogin(req, res, next) {
-    const { user, password } = req.body;
-    console.log("user: ", user);
-    console.log("password: ", password);
-    const data = await apiUserService.authLogin(user, password);
+    const { id, password } = req.body;
+    const data = await apiUserService.authLogin(id, password);
 
     res.status(200).json(data);
   }

@@ -1,12 +1,12 @@
 import db from "../app/models";
 
-const authLogin = (user, password) => {
+const authLogin = (id, password) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!user) {
+      if (!id) {
         resolve({
           errCode: 1,
-          errMessage: "User trống!",
+          errMessage: "Id trống!",
         });
       } else if (!password) {
         resolve({
@@ -17,7 +17,7 @@ const authLogin = (user, password) => {
 
       const userData = await db.User.findOne({
         where: {
-          id: user,
+          id,
           password,
         },
         raw: true,
@@ -40,7 +40,5 @@ const authLogin = (user, password) => {
     }
   });
 };
-
-
 
 export default { authLogin };
