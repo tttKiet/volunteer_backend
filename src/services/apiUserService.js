@@ -15,9 +15,9 @@ const authLogin = (user, password) => {
         });
       }
 
-      const userData = await db.Account.findOne({
+      const userData = await db.User.findOne({
         where: {
-          user,
+          id: user,
           password,
         },
         raw: true,
@@ -40,5 +40,7 @@ const authLogin = (user, password) => {
     }
   });
 };
+
+
 
 export default { authLogin };

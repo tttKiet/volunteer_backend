@@ -1,22 +1,21 @@
-import { accountServices, apiAccountServices } from "../../services";
+import { apiUserService, apiPostService } from "../../services";
 
 class apiController {
-  // [GET] /api/v1/accounts
-  async getAccount(req, res, next) {
-    const accounts = await accountServices.getAccount();
-    return res.status(200).json({
-      accounts,
-    });
-  }
-
   // [POST] /api/v1/login
   async handleLogin(req, res, next) {
     const { user, password } = req.body;
     console.log("user: ", user);
     console.log("password: ", password);
-    const data = await apiAccountServices.authLogin(user, password);
+    const data = await apiUserService.authLogin(user, password);
 
     res.status(200).json(data);
+  }
+
+  // [GET] /api/v1/post
+  async handleGetPost(req, res, next) {
+    const id = req.query.id;
+    const posts = await apiPostService.getPost(id);
+    res.status(200).json(posts);
   }
 }
 

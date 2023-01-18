@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       VolunteerWork.hasMany(models.ListUser, {
         foreignKey: "workId",
+        as: "work",
       });
     }
   }

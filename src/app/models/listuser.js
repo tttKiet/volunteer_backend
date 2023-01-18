@@ -13,15 +13,19 @@ module.exports = (sequelize, DataTypes) => {
       ListUser.belongsTo(models.VolunteerWork, {
         foreignKey: "workId",
         targetKey: "id",
+        as: "work",
       });
       ListUser.belongsTo(models.User, {
         foreignKey: "userId",
         targetKey: "id",
+        as: "userWork",
       });
     }
   }
   ListUser.init(
     {
+      userId: DataTypes.STRING,
+      workId: DataTypes.STRING,
       status: DataTypes.STRING,
     },
     {

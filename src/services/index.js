@@ -1,2 +1,3 @@
-export { default as accountServices } from "./accountService";
-export { default as apiAccountServices } from "./apiAccountService";
+export { default as apiUserService } from "./apiUserService";
+export { default as apiPostService } from "./apiPostService";
+export { default as testService } from "./testService";
