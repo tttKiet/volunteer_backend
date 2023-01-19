@@ -1,7 +1,6 @@
 import db from "../app/models";
 
 const getWorkUser = (id) => {
-  console.log("--------------Test work user--------------");
   return new Promise(async (resolve, reject) => {
     try {
       const accounts = await db.ListUser.findAll({
