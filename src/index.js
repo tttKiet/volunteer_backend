@@ -26,7 +26,6 @@ app.use(morgan("combined"));
 
 // routes
 route(app);
-
 process.on("uncaughtException", (err, origin) => {
   console.log(err);
 });

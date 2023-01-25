@@ -46,6 +46,16 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
+        {
+          id: "5",
+          name: "Giúp đỡ người nghèo",
+          startDate: new Date(2023, 12, 12),
+          maxStudent: 30,
+          pointPlus: 3,
+          workPlace: "Trước cổng KTX A",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ],
       {}
     );

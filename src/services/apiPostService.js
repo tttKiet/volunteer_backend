@@ -16,6 +16,10 @@ const getPost = (userId) => {
         ...conditions,
         raw: true,
         nest: true,
+        order: [
+          ["updatedAt", "DESC"],
+          // ["name", "ASC"],
+        ],
         attributes: {
           exclude: ["userId"],
         },
