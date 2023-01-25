@@ -49,6 +49,20 @@ class apiController {
     const response = await apiWorkService.workBrowse(idWork, 1);
     res.status(200).json(response);
   }
+
+  // [GET]  /api/v1/work/get-name
+  async handleGetNameWork(req, res, next) {
+    const response = await apiWorkService.getNameWork("name");
+    res.status(200).json(response);
+  }
+
+  // [GET]  /api/v1/work/browsed
+  async handleGetWorkBrowsed(req, res, next) {
+    const id = req.query.id;
+
+    const response = await apiWorkService.getWork(1, id);
+    res.status(200).json(response);
+  }
 }
 
 export default new apiController();

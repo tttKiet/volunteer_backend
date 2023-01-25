@@ -1,14 +1,23 @@
 import db from "../app/models";
 
-const getWork = () => {
+const getWork = (isChecked = 0, id) => {
+  const conditions = {
+    where: {
+      status: isChecked ? 1 : 0,
+    },
+  };
+  const conditionWork = {};
+  if (id) {
+    conditionWork.where = {
+      id,
+    };
+  }
   return new Promise(async (resolve, reject) => {
     try {
       const data = await db.ListUser.findAll({
         raw: true,
         nest: true,
-        where: {
-          status: 0,
-        },
+        ...conditions,
         attributes: {
           exclude: ["userId", "workId"],
         },
@@ -27,6 +36,7 @@ const getWork = () => {
           {
             model: db.VolunteerWork,
             as: "work",
+            ...conditionWork,
             order: [["name", "ASC"]],
           },
         ],
@@ -44,6 +54,46 @@ const getWork = () => {
         errCode: 1,
         errMessage: "Error apiWorkServices at backend",
         works: [],
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const getNameWork = (type = "all") => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await db.VolunteerWork.findAll({ raw: true });
+      if (data) {
+        switch (type) {
+          case "name": {
+            const output = data.map((data) => {
+              return {
+                id: data.id,
+                name: data.name,
+              };
+            });
+            resolve({
+              errCode: 0,
+              errMessage: "",
+              workNames: output,
+            });
+          }
+          default: {
+            resolve(
+              resolve({
+                errCode: 0,
+                errMessage: "",
+                workNames: data,
+              })
+            );
+          }
+        }
+      }
+      resolve({
+        errCode: 1,
+        errMessage: "Lổi server apiWorkService!",
       });
     } catch (error) {
       reject(error);
@@ -106,4 +156,4 @@ const workBrowse = (id, req) => {
   });
 };
 
-export default { getWork, workBrowse };
+export default { getWork, workBrowse, getNameWork };
