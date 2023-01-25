@@ -39,6 +39,17 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
+        {
+          id: "user2",
+          password: "123",
+          name: "user2",
+          email: "kietb2014754@student.ctu.edu.vn",
+          faculty: "CNTT & TT",
+          className: "20V7A3",
+          type: "user",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ],
       {}
     );

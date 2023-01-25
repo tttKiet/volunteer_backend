@@ -1,4 +1,4 @@
-import { apiUserService, apiPostService } from "../../services";
+import { apiUserService, apiPostService, apiWorkService } from "../../services";
 
 class apiController {
   // [POST] /api/v1/login
@@ -27,6 +27,26 @@ class apiController {
     }
     const data = { userId, title, description };
     const response = await apiPostService.upPost(data);
+    res.status(200).json(response);
+  }
+
+  // [GET] /api/v1/work
+  async handleGetWork(req, res, next) {
+    const data = await apiWorkService.getWork();
+    res.status(200).json(data);
+  }
+
+  // [PATCH]  /api/v1/work-browse
+  async handleBrowse(req, res, next) {
+    const idWork = req.body.id;
+    if (!idWork) {
+      res.status(200).json({
+        errCode: 1,
+        errMessage: "Missing parameter: id !!",
+      });
+    }
+
+    const response = await apiWorkService.workBrowse(idWork, 1);
     res.status(200).json(response);
   }
 }

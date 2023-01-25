@@ -12,6 +12,48 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
+        {
+          workId: "2",
+          userId: "B2014754",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          workId: "3",
+          userId: "B2014754",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          workId: "4",
+          userId: "B2014754",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          workId: "4",
+          userId: "user1",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          workId: "2",
+          userId: "user2",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          workId: "1",
+          userId: "user2",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          workId: "3",
+          userId: "B2014755",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ],
       {}
     );
