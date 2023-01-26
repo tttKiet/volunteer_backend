@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import db from "../app/models";
 
 const getWork = (isChecked = 0, id) => {
@@ -156,4 +157,31 @@ const workBrowse = (id, req) => {
   });
 };
 
-export default { getWork, workBrowse, getNameWork };
+const createWork = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const work = await db.VolunteerWork.create({
+        id: uuidv4(),
+        name: data.name,
+        startDate: data.startDate,
+        maxStudent: data.maxStudent,
+        pointPlus: data.pointPlus,
+        workPlace: data.workPlace,
+      });
+      if (work) {
+        resolve({
+          errCode: 0,
+          errMessage: "Created!",
+        });
+      }
+      resolve({
+        errCode: 2,
+        errMessage: "Lổi server!",
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+export default { getWork, workBrowse, getNameWork, createWork };

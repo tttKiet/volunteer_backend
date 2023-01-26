@@ -63,6 +63,26 @@ class apiController {
     const response = await apiWorkService.getWork(1, id);
     res.status(200).json(response);
   }
+
+  // [POST]  /api/v1/work/create
+  async handleCreateWork(req, res, next) {
+    const { name, startDate, maxStudent, pointPlus, workPlace } = req.body;
+    if (!name || !startDate || !maxStudent || !pointPlus || !workPlace) {
+      return res.status(200).json({
+        errCode: 1,
+        errMessage: "Missing input!",
+      });
+    }
+    const response = await apiWorkService.createWork({
+      name,
+      startDate,
+      maxStudent,
+      pointPlus,
+      workPlace,
+    });
+
+    return res.status(200).json(response);
+  }
 }
 
 export default new apiController();

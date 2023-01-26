@@ -18,7 +18,8 @@
     "express-handlebars": "^6.0.6",
     "morgan": "^1.10.0",
     "mysql2": "^3.0.1",
-    "sequelize": "^6.28.0"
+    "sequelize": "^6.28.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

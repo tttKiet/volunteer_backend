@@ -10,6 +10,7 @@ router.get("/v1/work", apiController.handleGetWork);
 router.get("/v1/post", apiController.handleGetPost);
 router.post("/v1/post", apiController.handleUpPost);
 router.post("/v1/login", apiController.handleLogin);
+router.post("/v1/work/create", apiController.handleCreateWork);
 router.patch("/v1/work-browse", apiController.handleBrowse);
 
 export default router;
