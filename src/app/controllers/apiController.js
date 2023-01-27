@@ -56,6 +56,12 @@ class apiController {
     res.status(200).json(response);
   }
 
+  // [GET]  /api/v1/work/get-all
+  async handleGetAllWork(req, res, next) {
+    const response = await apiWorkService.getNameWork();
+    res.status(200).json(response);
+  }
+
   // [GET]  /api/v1/work/browsed
   async handleGetWorkBrowsed(req, res, next) {
     const id = req.query.id;
@@ -81,6 +87,19 @@ class apiController {
       workPlace,
     });
 
+    return res.status(200).json(response);
+  }
+
+  // [POST]  /api/v1/work/register
+  async handleRegisterWork(req, res, next) {
+    const { workId, userId } = req.body;
+    if (!workId || !userId) {
+      return res.status(404).json({
+        errCode: 4,
+        errMessage: "Thiếu tham số hay truyền chưa đúng!",
+      });
+    }
+    const response = await apiWorkService.registerWork(workId, userId);
     return res.status(200).json(response);
   }
 }

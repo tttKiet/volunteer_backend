@@ -184,4 +184,79 @@ const createWork = (data) => {
   });
 };
 
-export default { getWork, workBrowse, getNameWork, createWork };
+const registerWork = (workId, userId) => {
+  console.log("Register", workId, userId);
+
+  return new Promise(async (resolve, reject) => {
+    // Kiểm tra công việc và người dùng có tồn tại hay không
+    const work = db.VolunteerWork.findOne({
+      raw: true,
+      where: {
+        id: workId,
+      },
+    });
+    const user = db.User.findOne({
+      raw: true,
+      where: {
+        id: userId,
+      },
+    });
+
+    Promise.all([work, user])
+      .then(([work, user]) => {
+        if (!work) {
+          resolve({
+            errCode: 1,
+            errMessage: "Công việc này hiện không tồn tại hay vừa bị xóa!",
+          });
+        } else if (!user) {
+          resolve({
+            errCode: 1,
+            errMessage: "Người dùng này hiện không tồn tại hay vừa bị xóa!",
+          });
+        }
+      })
+      .catch(reject);
+
+    // Tìm xem trong bản ghi listUser có đăng ký người này chưa, nếu có thì thoát luôn
+    db.ListUser.findOne({
+      raw: true,
+      where: {
+        workId,
+        userId,
+      },
+    })
+      .then((res) => {
+        if (res) {
+          resolve({
+            errCode: 3,
+            errMessage: "Bạn đã đăng ký công việc này rồi!",
+          });
+        }
+      })
+      .catch(reject);
+
+    // Đăng ký cho người dùng này công việc TN
+    try {
+      const addList = await db.ListUser.create({
+        workId: workId,
+        userId: userId,
+      });
+
+      if (addList) {
+        resolve({
+          errCode: 0,
+          errMessage: "Đăng ký thành công.",
+        });
+      }
+      resolve({
+        errCode: 2,
+        errMessage: "Đăng ký thất bại, lỗi server!.",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+export default { getWork, workBrowse, getNameWork, createWork, registerWork };
