@@ -1,12 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
 import db from "../app/models";
 
-const getWork = (isChecked = 0, id) => {
+const getWork = ({ isChecked, id, userId }) => {
   const conditions = {
     where: {
       status: isChecked ? 1 : 0,
     },
   };
+  if (userId) {
+    conditions.where.userId = userId;
+    conditions.limit = 7;
+  }
   const conditionWork = {};
   if (id) {
     conditionWork.where = {
@@ -16,9 +20,10 @@ const getWork = (isChecked = 0, id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const data = await db.ListUser.findAll({
-        raw: true,
-        nest: true,
         ...conditions,
+        raw: true,
+        // limit: 7,
+        nest: true,
         attributes: {
           exclude: ["userId", "workId"],
         },
@@ -26,6 +31,8 @@ const getWork = (isChecked = 0, id) => {
           // ["status", "ASC"],
           // ["name", "ASC"],
         ],
+        separate: true,
+
         include: [
           {
             model: db.User,
@@ -38,7 +45,7 @@ const getWork = (isChecked = 0, id) => {
             model: db.VolunteerWork,
             as: "work",
             ...conditionWork,
-            order: [["name", "ASC"]],
+            order: [["startDate", "ASC"]],
           },
         ],
       });
@@ -218,41 +225,39 @@ const registerWork = (workId, userId) => {
       })
       .catch(reject);
 
-    // Tìm xem trong bản ghi listUser có đăng ký người này chưa, nếu có thì thoát luôn
-    db.ListUser.findOne({
-      raw: true,
-      where: {
-        workId,
-        userId,
-      },
-    })
-      .then((res) => {
-        if (res) {
+    try {
+      // Tìm xem trong bản ghi listUser có đăng ký người này chưa, nếu có thì thoát luôn
+      const exitsRegister = await db.ListUser.findOne({
+        raw: true,
+        where: {
+          workId,
+          userId,
+        },
+      });
+      if (exitsRegister) {
+        resolve({
+          errCode: 3,
+          errMessage: "Bạn đã đăng ký công việc này rồi!",
+        });
+      } else {
+        // Đăng ký cho người dùng này công việc TN
+        console.log("ListUser----------------------------");
+        const addList = await db.ListUser.create({
+          workId: workId,
+          userId: userId,
+        });
+
+        if (addList) {
           resolve({
-            errCode: 3,
-            errMessage: "Bạn đã đăng ký công việc này rồi!",
+            errCode: 0,
+            errMessage: "Đăng ký thành công.",
           });
         }
-      })
-      .catch(reject);
-
-    // Đăng ký cho người dùng này công việc TN
-    try {
-      const addList = await db.ListUser.create({
-        workId: workId,
-        userId: userId,
-      });
-
-      if (addList) {
         resolve({
-          errCode: 0,
-          errMessage: "Đăng ký thành công.",
+          errCode: 2,
+          errMessage: "Đăng ký thất bại, lỗi server!.",
         });
       }
-      resolve({
-        errCode: 2,
-        errMessage: "Đăng ký thất bại, lỗi server!.",
-      });
     } catch (e) {
       reject(e);
     }

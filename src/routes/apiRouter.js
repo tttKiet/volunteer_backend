@@ -8,6 +8,7 @@ router.get("/v1/work/get-name", apiController.handleGetNameWork);
 router.get("/v1/work/get-all", apiController.handleGetAllWork);
 router.get("/v1/work/browsed", apiController.handleGetWorkBrowsed);
 router.get("/v1/work", apiController.handleGetWork);
+router.get("/v1/work-user", apiController.handleGetWorkUser);
 router.get("/v1/post", apiController.handleGetPost);
 router.post("/v1/work/register", apiController.handleRegisterWork);
 router.post("/v1/post", apiController.handleUpPost);

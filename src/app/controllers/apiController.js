@@ -32,7 +32,26 @@ class apiController {
 
   // [GET] /api/v1/work
   async handleGetWork(req, res, next) {
-    const data = await apiWorkService.getWork();
+    const data = await apiWorkService.getWork({});
+    res.status(200).json(data);
+  }
+
+  // [GET] /api/v1/work-user
+  async handleGetWorkUser(req, res, next) {
+    const userId = req.query.userId;
+    const isChecked = req.query.isChecked;
+
+    if (!userId) {
+      res.status(200).json({
+        errCode: 3,
+        errMessage: "User trống!",
+      });
+    }
+    const data = await apiWorkService.getWork({
+      isChecked: 1,
+      userId,
+      isChecked,
+    });
     res.status(200).json(data);
   }
 
@@ -66,7 +85,10 @@ class apiController {
   async handleGetWorkBrowsed(req, res, next) {
     const id = req.query.id;
 
-    const response = await apiWorkService.getWork(1, id);
+    const response = await apiWorkService.getWork({
+      isChecked: 1,
+      id,
+    });
     res.status(200).json(response);
   }
 
