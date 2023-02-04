@@ -1,7 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
 import db from "../app/models";
+const { Op } = require("sequelize");
 
-const getWork = ({ isChecked, id, userId }) => {
+const getWork = ({
+  isChecked,
+  id,
+  userId,
+  limit = 7,
+  typeTimeWork = "Doing",
+}) => {
   const conditions = {
     where: {
       status: isChecked ? 1 : 0,
@@ -9,7 +16,7 @@ const getWork = ({ isChecked, id, userId }) => {
   };
   if (userId) {
     conditions.where.userId = userId;
-    conditions.limit = 7;
+    conditions.limit = limit;
   }
   const conditionWork = {};
   if (id) {
@@ -17,20 +24,28 @@ const getWork = ({ isChecked, id, userId }) => {
       id,
     };
   }
+  if (typeTimeWork === "Doing") {
+    if (conditionWork?.where) {
+      conditionWork.where.startDate = { [Op.gte]: new Date() };
+    } else {
+      conditionWork.where = {
+        startDate: { [Op.gte]: new Date() },
+      };
+    }
+  } else if (typeTimeWork === "Done") {
+    // Lay cv da lam
+  }
+
   return new Promise(async (resolve, reject) => {
     try {
       const data = await db.ListUser.findAll({
         ...conditions,
         raw: true,
-        // limit: 7,
         nest: true,
         attributes: {
           exclude: ["userId", "workId"],
         },
-        order: [
-          // ["status", "ASC"],
-          // ["name", "ASC"],
-        ],
+
         separate: true,
 
         include: [
@@ -45,8 +60,16 @@ const getWork = ({ isChecked, id, userId }) => {
             model: db.VolunteerWork,
             as: "work",
             ...conditionWork,
-            order: [["startDate", "ASC"]],
           },
+        ],
+        order: [
+          [
+            {
+              model: db.work,
+            },
+            "startDate",
+            "ASC",
+          ],
         ],
       });
 
@@ -69,10 +92,24 @@ const getWork = ({ isChecked, id, userId }) => {
   });
 };
 
-const getNameWork = (type = "all") => {
+const getNameWork = ({ type = "all", typeTimeWork = "Doing" }) => {
+  const conditionWork = {};
+  if (typeTimeWork === "Doing") {
+    if (conditionWork?.where) {
+      conditionWork.where.startDate = { [Op.gte]: new Date() };
+    } else {
+      conditionWork.where = {
+        startDate: { [Op.gte]: new Date() },
+      };
+    }
+  }
   return new Promise(async (resolve, reject) => {
     try {
-      const data = await db.VolunteerWork.findAll({ raw: true });
+      const data = await db.VolunteerWork.findAll({
+        raw: true,
+        ...conditionWork,
+        order: [["startDate", "ASC"]],
+      });
       if (data) {
         switch (type) {
           case "name": {
@@ -89,13 +126,11 @@ const getNameWork = (type = "all") => {
             });
           }
           default: {
-            resolve(
-              resolve({
-                errCode: 0,
-                errMessage: "",
-                workNames: data,
-              })
-            );
+            resolve({
+              errCode: 0,
+              errMessage: "",
+              workNames: data,
+            });
           }
         }
       }

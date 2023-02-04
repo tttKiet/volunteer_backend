@@ -77,7 +77,7 @@ class apiController {
 
   // [GET]  /api/v1/work/get-all
   async handleGetAllWork(req, res, next) {
-    const response = await apiWorkService.getNameWork();
+    const response = await apiWorkService.getNameWork({});
     res.status(200).json(response);
   }
 
