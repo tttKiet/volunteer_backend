@@ -1,6 +1,6 @@
 import db from "../app/models";
 
-const getPost = (userId) => {
+const getPost = ({ userId, limit = 8 }) => {
   let conditions = {};
   if (userId) {
     conditions = {
@@ -16,8 +16,9 @@ const getPost = (userId) => {
         ...conditions,
         raw: true,
         nest: true,
+        limit: limit,
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           // ["name", "ASC"],
         ],
         attributes: {
@@ -46,8 +47,6 @@ const getPost = (userId) => {
   });
 };
 const upPost = (data) => {
-  console.log("up server", data);
-
   return new Promise(async (resolve, reject) => {
     const isHaveUser = await checkUserData(data.userId);
     console.log("have user", isHaveUser);

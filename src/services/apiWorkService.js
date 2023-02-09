@@ -299,4 +299,39 @@ const registerWork = (workId, userId) => {
   });
 };
 
-export default { getWork, workBrowse, getNameWork, createWork, registerWork };
+const deleteUserOfListWork = (id) => {
+  if (!id) {
+    return {
+      errCode: 1,
+      errMessage: "Không có id",
+    };
+  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      const listUser = await db.ListUser.findByPk(id);
+      if (!listUser) {
+        resolve({
+          errCode: 2,
+          errMessage: "Không tìm thấy dòng này!",
+        });
+      }
+
+      await listUser.destroy();
+      resolve({
+        errCode: 0,
+        errMessage: "Xóa thành công!",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+export default {
+  getWork,
+  workBrowse,
+  getNameWork,
+  createWork,
+  registerWork,
+  deleteUserOfListWork,
+};

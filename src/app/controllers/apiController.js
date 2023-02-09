@@ -11,8 +11,14 @@ class apiController {
 
   // [GET] /api/v1/post
   async handleGetPost(req, res, next) {
-    const id = req.query.id;
-    const posts = await apiPostService.getPost(id);
+    const userId = req.query.id;
+    const posts = await apiPostService.getPost({ userId });
+    res.status(200).json(posts);
+  }
+
+  // [GET] /api/v1/get-all-post
+  async handleGetAllPost(req, res, next) {
+    const posts = await apiPostService.getPost({ limit: 4 });
     res.status(200).json(posts);
   }
 
@@ -123,6 +129,13 @@ class apiController {
     }
     const response = await apiWorkService.registerWork(workId, userId);
     return res.status(200).json(response);
+  }
+
+  // [DELETE]  api/v1/listUser/delete
+  async handleDeleteListUser(req, res, next) {
+    const id = req.body.id;
+    const response = await apiWorkService.deleteUserOfListWork(id);
+    res.status(200).json(response);
   }
 }
 
