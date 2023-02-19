@@ -1,14 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 import db from "../app/models";
+import Sequelize from "sequelize";
 const { Op } = require("sequelize");
 
-const getWork = ({
-  isChecked,
-  id,
-  userId,
-  limit = 7,
-  typeTimeWork = "Doing",
-}) => {
+const getWork = ({ isChecked, id, userId, limit, typeTimeWork = "Doing" }) => {
   const conditions = {
     where: {
       status: isChecked ? 1 : 0,
@@ -16,7 +11,9 @@ const getWork = ({
   };
   if (userId) {
     conditions.where.userId = userId;
-    conditions.limit = limit;
+    if (limit) {
+      conditions.limit = limit;
+    }
   }
   const conditionWork = {};
   if (id) {
@@ -43,8 +40,93 @@ const getWork = ({
         raw: true,
         nest: true,
         attributes: {
+          // include: [
+          //   [Sequelize.fn("COUNT", Sequelize.col("work.id")), "workCount"],
+          // ],
           exclude: ["userId", "workId"],
         },
+
+        separate: true,
+
+        include: [
+          {
+            model: db.User,
+            as: "userWork",
+            attributes: {
+              exclude: ["password", "createdAt", "updatedAt"],
+            },
+          },
+          {
+            model: db.VolunteerWork,
+            as: "work",
+            ...conditionWork,
+          },
+        ],
+        order: [
+          [
+            {
+              model: db.work,
+            },
+            "startDate",
+            "ASC",
+          ],
+        ],
+      });
+
+      if (data.length > 0) {
+        resolve({
+          errCode: 0,
+          errMessage: "",
+          works: data,
+        });
+      }
+
+      resolve({
+        errCode: 1,
+        errMessage: "Không có bản ghi nào phù hợp!",
+        works: [],
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const getWorkAndCountResquest = ({ workId }) => {
+  const conditions = {
+    where: {
+      status: 0,
+    },
+  };
+
+  const conditionWork = {};
+  if (workId) {
+    conditionWork.where = {
+      id: workId,
+    };
+  }
+
+  if (conditionWork?.where) {
+    conditionWork.where.startDate = { [Op.gte]: new Date() };
+  } else {
+    conditionWork.where = {
+      startDate: { [Op.gte]: new Date() },
+    };
+  }
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await db.ListUser.findAll({
+        ...conditions,
+        raw: true,
+        nest: true,
+        attributes: {
+          include: [
+            [Sequelize.fn("COUNT", Sequelize.col("userWork.id")), "workCount"],
+          ],
+          exclude: ["userId", "workId"],
+        },
+        group: ["work.id"],
 
         separate: true,
 
@@ -92,8 +174,13 @@ const getWork = ({
   });
 };
 
-const getNameWork = ({ type = "all", typeTimeWork = "Doing" }) => {
+const getNameWork = ({ type = "all", typeTimeWork = "Doing", workId }) => {
   const conditionWork = {};
+  if (workId) {
+    conditionWork.where = {
+      id: workId,
+    };
+  }
   if (typeTimeWork === "Doing") {
     if (conditionWork?.where) {
       conditionWork.where.startDate = { [Op.gte]: new Date() };
@@ -110,7 +197,9 @@ const getNameWork = ({ type = "all", typeTimeWork = "Doing" }) => {
         ...conditionWork,
         order: [["startDate", "ASC"]],
       });
-      if (data) {
+
+      console.log("--------", data);
+      if (data.length > 0) {
         switch (type) {
           case "name": {
             const output = data.map((data) => {
@@ -136,7 +225,7 @@ const getNameWork = ({ type = "all", typeTimeWork = "Doing" }) => {
       }
       resolve({
         errCode: 1,
-        errMessage: "Lổi server apiWorkService!",
+        errMessage: "Không tìm thấy bản ghi phù hợp!",
       });
     } catch (error) {
       reject(error);
@@ -334,4 +423,5 @@ export default {
   createWork,
   registerWork,
   deleteUserOfListWork,
+  getWorkAndCountResquest,
 };

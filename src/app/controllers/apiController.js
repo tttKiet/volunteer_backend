@@ -1,4 +1,5 @@
 import { apiUserService, apiPostService, apiWorkService } from "../../services";
+const cloudinary = require("cloudinary").v2;
 
 class apiController {
   // [POST] /api/v1/login
@@ -18,27 +19,43 @@ class apiController {
 
   // [GET] /api/v1/get-all-post
   async handleGetAllPost(req, res, next) {
-    const posts = await apiPostService.getPost({ limit: 4 });
+    const limit = Number.parseInt(req.query.limit) || 8;
+    const posts = await apiPostService.getPost({ limit });
     res.status(200).json(posts);
   }
 
   // [POST] /api/v1/post
   async handleUpPost(req, res, next) {
     const { userId, title, description } = req.body;
+    const file = req.file;
+
+    // console.log("body---------------------", req.body);
+    // res.status(200).json("ok");
     if (!userId || !title || !description) {
       res.status(404).json({
         errCode: 3,
         errMessage: "Missing parameters!!",
       });
+
+      if (file) {
+        cloudinary.uploader.destroy(file.filename);
+      }
     }
-    const data = { userId, title, description };
+    const data = { userId, title, description, file };
     const response = await apiPostService.upPost(data);
     res.status(200).json(response);
   }
 
   // [GET] /api/v1/work
   async handleGetWork(req, res, next) {
-    const data = await apiWorkService.getWork({});
+    const workId = req.query.workId;
+    const data = await apiWorkService.getWork({ id: workId });
+    res.status(200).json(data);
+  }
+
+  // [GET] /api/v1/work/get-and-count-resquest
+  async handleGetWorkAndCountResquest(req, res, next) {
+    const data = await apiWorkService.getWorkAndCountResquest({});
     res.status(200).json(data);
   }
 
@@ -83,7 +100,8 @@ class apiController {
 
   // [GET]  /api/v1/work/get-all
   async handleGetAllWork(req, res, next) {
-    const response = await apiWorkService.getNameWork({});
+    const workId = req.query.workId;
+    const response = await apiWorkService.getNameWork({ workId });
     res.status(200).json(response);
   }
 

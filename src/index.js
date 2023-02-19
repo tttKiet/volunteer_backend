@@ -1,10 +1,10 @@
 import express from "express";
 import morgan from "morgan";
-import { default as dotenv } from "dotenv";
 import configViewEngine from "./config/viewEngine";
 import db from "./config/db";
 import { configHeader } from "./app/middleWares";
 import route from "./routes";
+import { default as dotenv } from "dotenv";
 dotenv.config();
 
 const app = express();

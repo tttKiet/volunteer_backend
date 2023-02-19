@@ -49,18 +49,24 @@ const getPost = ({ userId, limit = 8 }) => {
 const upPost = (data) => {
   return new Promise(async (resolve, reject) => {
     const isHaveUser = await checkUserData(data.userId);
-    console.log("have user", isHaveUser);
+    let image;
+    if (data.file) {
+      image = data.file.path;
+    }
+
     if (!isHaveUser) {
       resolve({
         errCode: 1,
         errMessage: `Không có người dùng ${data.userId} trong hệ thống!`,
       });
     }
+
     try {
       const newPost = db.Post.create({
         userId: data.userId,
         title: data.title,
         description: data.description,
+        linkImage: image,
       });
 
       if (newPost) {
