@@ -47,6 +47,7 @@ const getPost = ({ userId, limit = 8 }) => {
   });
 };
 const upPost = (data) => {
+  console.log("---------data", data);
   return new Promise(async (resolve, reject) => {
     const isHaveUser = await checkUserData(data.userId);
     let image;
@@ -66,7 +67,7 @@ const upPost = (data) => {
         userId: data.userId,
         title: data.title,
         description: data.description,
-        linkImage: image,
+        linkImage: image ? image : "",
       });
 
       if (newPost) {

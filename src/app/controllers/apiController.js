@@ -29,21 +29,20 @@ class apiController {
     const { userId, title, description } = req.body;
     const file = req.file;
 
-    // console.log("body---------------------", req.body);
-    // res.status(200).json("ok");
+    console.log("body---------------------", req.body);
+    console.log("file---------------------", req.file);
     if (!userId || !title || !description) {
-      res.status(404).json({
-        errCode: 3,
-        errMessage: "Missing parameters!!",
-      });
-
       if (file) {
         cloudinary.uploader.destroy(file.filename);
       }
+      return res.status(200).json({
+        errCode: 3,
+        errMessage: "Missing parameters!!",
+      });
     }
     const data = { userId, title, description, file };
     const response = await apiPostService.upPost(data);
-    res.status(200).json(response);
+    return res.status(200).json(response);
   }
 
   // [GET] /api/v1/work
