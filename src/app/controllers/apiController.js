@@ -27,7 +27,7 @@ class apiController {
   // [POST] /api/v1/post
   async handleUpPost(req, res, next) {
     const { userId, title, description } = req.body;
-    const file = req.file;
+    const file = req.file ? req.file : req.body.image;
 
     console.log("body---------------------", req.body);
     console.log("file---------------------", req.file);
@@ -117,7 +117,8 @@ class apiController {
 
   // [POST]  /api/v1/work/create
   async handleCreateWork(req, res, next) {
-    const { name, startDate, maxStudent, pointPlus, workPlace } = req.body;
+    const { name, startDate, maxStudent, pointPlus, workPlace, note } =
+      req.body;
     if (!name || !startDate || !maxStudent || !pointPlus || !workPlace) {
       return res.status(200).json({
         errCode: 1,
@@ -130,6 +131,7 @@ class apiController {
       maxStudent,
       pointPlus,
       workPlace,
+      note,
     });
 
     return res.status(200).json(response);

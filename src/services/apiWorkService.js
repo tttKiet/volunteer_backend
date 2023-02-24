@@ -291,6 +291,13 @@ const workBrowse = (id, req) => {
 const createWork = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (new Date(data.startDate) <= new Date()) {
+        return resolve({
+          errCode: 2,
+          errMessage: "Ngày bắt đầu công việc phải là ngày trong tương lai!",
+        });
+      }
+
       const work = await db.VolunteerWork.create({
         id: uuidv4(),
         name: data.name,
@@ -298,6 +305,7 @@ const createWork = (data) => {
         maxStudent: data.maxStudent,
         pointPlus: data.pointPlus,
         workPlace: data.workPlace,
+        note: data.note ? data.note : null,
       });
       if (work) {
         resolve({
@@ -306,7 +314,7 @@ const createWork = (data) => {
         });
       }
       resolve({
-        errCode: 2,
+        errCode: 3,
         errMessage: "Lổi server!",
       });
     } catch (error) {

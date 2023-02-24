@@ -47,12 +47,13 @@ const getPost = ({ userId, limit = 8 }) => {
   });
 };
 const upPost = (data) => {
-  console.log("---------data", data);
   return new Promise(async (resolve, reject) => {
     const isHaveUser = await checkUserData(data.userId);
     let image;
-    if (data.file) {
+    if (data.file && data.file?.path) {
       image = data.file.path;
+    } else {
+      image = data.file;
     }
 
     if (!isHaveUser) {

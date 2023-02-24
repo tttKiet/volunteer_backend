@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       curStudent: DataTypes.INTEGER,
       pointPlus: DataTypes.INTEGER,
       workPlace: DataTypes.TEXT,
+      note: DataTypes.TEXT,
     },
     {
       sequelize,
