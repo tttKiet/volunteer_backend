@@ -174,12 +174,41 @@ const getWorkAndCountResquest = ({ workId }) => {
   });
 };
 
-const getNameWork = ({ type = "all", typeTimeWork = "Doing", workId }) => {
+const getNameWork = async ({
+  type = "all",
+  typeTimeWork = "Doing",
+  workId,
+  userId,
+  softByUser = 0,
+}) => {
   const conditionWork = {};
+  var order;
+
   if (workId) {
     conditionWork.where = {
       id: workId,
     };
+  } else {
+    if (softByUser === 1 && userId) {
+      console.log("=============userId is, ", userId);
+      var array = await getWorkUserReg({ userId: userId });
+      // conditionWork.where = {
+      //   id: { [Sequelize.Op.notIn]: array.data },
+      // };
+      order = [
+        [
+          Sequelize.literal(
+            `CASE WHEN id IN (${array.data
+              .map((id) => `"${id}"`)
+              .join(",")}) THEN 0 ELSE 1 END`
+          ),
+          "DESC",
+        ],
+        ["startDate", "ASC"],
+      ];
+    } else {
+      order = [["startDate", "ASC"]];
+    }
   }
   if (typeTimeWork === "Doing") {
     if (conditionWork?.where) {
@@ -195,10 +224,9 @@ const getNameWork = ({ type = "all", typeTimeWork = "Doing", workId }) => {
       const data = await db.VolunteerWork.findAll({
         raw: true,
         ...conditionWork,
-        order: [["startDate", "ASC"]],
+        order: [...order],
       });
 
-      console.log("--------", data);
       if (data.length > 0) {
         switch (type) {
           case "name": {
@@ -373,7 +401,6 @@ const registerWork = (workId, userId) => {
         });
       } else {
         // Đăng ký cho người dùng này công việc TN
-        console.log("ListUser----------------------------");
         const addList = await db.ListUser.create({
           workId: workId,
           userId: userId,
@@ -424,8 +451,34 @@ const deleteUserOfListWork = (id) => {
   });
 };
 
+const getWorkUserReg = ({ userId }) => {
+  if (!userId) {
+    return {
+      errCode: 1,
+      errMessage: "Không có userId",
+    };
+  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      const listWork = await db.ListUser.findAll({
+        raw: true,
+        where: { userId: userId },
+      });
+
+      return resolve({
+        errCode: 0,
+        errMessage: "Succses!",
+        data: listWork.map((work) => work.workId),
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 export default {
   getWork,
+  getWorkUserReg,
   workBrowse,
   getNameWork,
   createWork,

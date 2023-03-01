@@ -93,15 +93,23 @@ class apiController {
 
   // [GET]  /api/v1/work/get-name
   async handleGetNameWork(req, res, next) {
-    const response = await apiWorkService.getNameWork("name");
+    const response = await apiWorkService.getNameWork({ type: "name" });
     res.status(200).json(response);
   }
 
   // [GET]  /api/v1/work/get-all
   async handleGetAllWork(req, res, next) {
-    const workId = req.query.workId;
+    const { workId, userId } = req.query;
+    if (userId) {
+      const response = await apiWorkService.getNameWork({
+        userId,
+        softByUser: 1,
+      });
+      return res.status(200).json(response);
+    }
+
     const response = await apiWorkService.getNameWork({ workId });
-    res.status(200).json(response);
+    return res.status(200).json(response);
   }
 
   // [GET]  /api/v1/work/browsed
@@ -154,6 +162,14 @@ class apiController {
   async handleDeleteListUser(req, res, next) {
     const id = req.body.id;
     const response = await apiWorkService.deleteUserOfListWork(id);
+    res.status(200).json(response);
+  }
+
+  // [GET] api/v1/work-user-register
+  async handleGetWorkUserRegister(req, res, next) {
+    const response = await apiWorkService.getWorkUserReg({
+      userId: req.query.userId,
+    });
     res.status(200).json(response);
   }
 }
