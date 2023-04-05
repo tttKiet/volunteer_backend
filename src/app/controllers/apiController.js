@@ -161,14 +161,38 @@ class apiController {
   // [DELETE]  api/v1/listUser/delete
   async handleDeleteListUser(req, res, next) {
     const id = req.body.id;
-    const response = await apiWorkService.deleteUserOfListWork(id);
-    res.status(200).json(response);
+    const isAdmin = req.body.isAdmin;
+    const userId = req.body.userId;
+    if (isAdmin) {
+      const response = await apiWorkService.deleteUserOfListWork({ id });
+      res.status(200).json(response);
+    } else {
+      const response = await apiWorkService.deleteUserOfListWork({
+        id,
+        userId,
+      });
+      res.status(200).json(response);
+    }
   }
 
   // [GET] api/v1/work-user-register
   async handleGetWorkUserRegister(req, res, next) {
     const response = await apiWorkService.getWorkUserReg({
       userId: req.query.userId,
+    });
+    res.status(200).json(response);
+  }
+
+  // [GET] api/v1/work/get-one
+  async handleGetOneWork(req, res, next) {
+    if (!req.query.workId) {
+      return res.status(200).json({
+        errcode: 4,
+        errMessage: "Thiếu tham số workId",
+      });
+    }
+    const response = await apiWorkService.getVolunteerWork({
+      workId: req.query.workId,
     });
     res.status(200).json(response);
   }

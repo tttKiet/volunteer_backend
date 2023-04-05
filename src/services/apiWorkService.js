@@ -92,6 +92,41 @@ const getWork = ({ isChecked, id, userId, limit, typeTimeWork = "Doing" }) => {
   });
 };
 
+const getVolunteerWork = ({ workId }) => {
+  if (!workId) {
+    return {
+      errCode: 1,
+      errMessage: "Không có Work Id",
+    };
+  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await db.VolunteerWork.findOne({
+        raw: true,
+        where: {
+          id: workId,
+        },
+      });
+
+      if (data) {
+        resolve({
+          errcode: 0,
+          errMessage: "Ok",
+          data: data,
+        });
+      } else {
+        resolve({
+          errcode: 2,
+          errMessage: `Không tìm thấy công việc có id= ${workId}`,
+        });
+      }
+    } catch (error) {
+      console.log("error in file apiWorkService: ", error);
+      reject(error);
+    }
+  });
+};
+
 const getWorkAndCountResquest = ({ workId }) => {
   const conditions = {
     where: {
@@ -190,22 +225,27 @@ const getNameWork = async ({
     };
   } else {
     if (softByUser === 1 && userId) {
-      console.log("=============userId is, ", userId);
       var array = await getWorkUserReg({ userId: userId });
-      // conditionWork.where = {
-      //   id: { [Sequelize.Op.notIn]: array.data },
-      // };
-      order = [
-        [
-          Sequelize.literal(
-            `CASE WHEN id IN (${array.data
-              .map((id) => `"${id}"`)
-              .join(",")}) THEN 0 ELSE 1 END`
-          ),
-          "DESC",
-        ],
-        ["startDate", "ASC"],
-      ];
+      console.log(
+        "----------------- sad sa  --------------------------------------",
+        array
+      );
+
+      if (array.data.length > 0) {
+        order = [
+          [
+            Sequelize.literal(
+              `CASE WHEN id IN (${array.data
+                .map((id) => `"${id}"`)
+                .join(",")}) THEN 0 ELSE 1 END`
+            ),
+            "DESC",
+          ],
+          ["startDate", "ASC"],
+        ];
+      } else {
+        order = [["startDate", "ASC"]];
+      }
     } else {
       order = [["startDate", "ASC"]];
     }
@@ -423,32 +463,79 @@ const registerWork = (workId, userId) => {
   });
 };
 
-const deleteUserOfListWork = (id) => {
+const deleteUserOfListWork = ({ id, userId }) => {
   if (!id) {
     return {
       errCode: 1,
       errMessage: "Không có id",
     };
   }
-  return new Promise(async (resolve, reject) => {
-    try {
-      const listUser = await db.ListUser.findByPk(id);
-      if (!listUser) {
-        resolve({
-          errCode: 2,
-          errMessage: "Không tìm thấy dòng này!",
-        });
-      }
 
-      await listUser.destroy();
-      resolve({
-        errCode: 0,
-        errMessage: "Xóa thành công!",
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
+  if (!userId) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const listUser = await db.ListUser.findByPk(id);
+        if (!listUser) {
+          resolve({
+            errCode: 2,
+            errMessage: "Không tìm thấy dòng này!",
+          });
+        }
+
+        await listUser.destroy();
+        resolve({
+          errCode: 0,
+          errMessage: "Xóa thành công!",
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  } else {
+    // Dang fix -------------------------
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(new Date().getDate() + 3);
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const listUser = await db.ListUser.findOne({
+          nest: true,
+          where: {
+            id,
+          },
+          include: [
+            {
+              model: db.VolunteerWork,
+              as: "work",
+
+              where: {
+                startDate: {
+                  [Op.gt]: threeDaysAgo,
+                },
+              },
+            },
+          ],
+        });
+
+        if (!listUser) {
+          resolve({
+            errCode: 2,
+            errMessage:
+              "Không thể hủy tham gia công việc này trước 3 ngày! Vui lòng liên hệ các Admin nếu có trường hợp khẩn!",
+          });
+        } else {
+          await listUser.destroy();
+        }
+
+        resolve({
+          errCode: 0,
+          errMessage: "Xóa thành công!",
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 };
 
 const getWorkUserReg = ({ userId }) => {
@@ -484,5 +571,6 @@ export default {
   createWork,
   registerWork,
   deleteUserOfListWork,
+  getVolunteerWork,
   getWorkAndCountResquest,
 };

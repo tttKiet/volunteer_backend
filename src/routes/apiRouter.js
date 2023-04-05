@@ -10,6 +10,7 @@ router.get(
   apiController.handleGetWorkAndCountResquest
 );
 router.get("/v1/work/get-all", apiController.handleGetAllWork);
+router.get("/v1/work/get-one", apiController.handleGetOneWork);
 router.get("/v1/work/browsed", apiController.handleGetWorkBrowsed);
 router.get("/v1/work", apiController.handleGetWork);
 router.get("/v1/work-user", apiController.handleGetWorkUser);
