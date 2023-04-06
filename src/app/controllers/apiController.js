@@ -196,6 +196,15 @@ class apiController {
     });
     res.status(200).json(response);
   }
+
+  // [GET] api/v1/statistical/student-par-req
+  async handleStatisticalParReq(req, res, next) {
+    const year = req.query.year;
+    const response = await apiWorkService.getDataStatisticalParReq({
+      year,
+    });
+    res.status(200).json(response);
+  }
 }
 
 export default new apiController();

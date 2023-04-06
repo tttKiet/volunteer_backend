@@ -17,6 +17,10 @@ router.get("/v1/work-user", apiController.handleGetWorkUser);
 router.get("/v1/work-user-register", apiController.handleGetWorkUserRegister);
 router.get("/v1/post", apiController.handleGetPost);
 router.get("/v1/get-all-post", apiController.handleGetAllPost);
+router.get(
+  "/v1/statistical/student-par-req",
+  apiController.handleStatisticalParReq
+);
 router.post("/v1/work/register", apiController.handleRegisterWork);
 router.post(
   "/v1/post",

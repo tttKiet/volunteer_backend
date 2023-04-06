@@ -492,7 +492,6 @@ const deleteUserOfListWork = ({ id, userId }) => {
       }
     });
   } else {
-    // Dang fix -------------------------
     const threeDaysAgo = new Date();
     threeDaysAgo.setDate(new Date().getDate() + 3);
 
@@ -563,6 +562,75 @@ const getWorkUserReg = ({ userId }) => {
   });
 };
 
+const getDataStatisticalParReq = ({ year = new Date().getFullYear() - 1 }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const listWorkPar = await db.ListUser.findAll({
+        raw: true,
+        nest: true,
+        attributes: [
+          [Sequelize.fn("MONTH", Sequelize.col("startDate")), "month"],
+          [Sequelize.fn("COUNT", "*"), "count"],
+        ],
+        where: {
+          status: 1,
+        },
+        include: [
+          {
+            model: db.VolunteerWork,
+            as: "work",
+            where: {
+              startDate: Sequelize.literal(`YEAR(startDate) = ${year}`),
+            },
+          },
+        ],
+        group: [Sequelize.fn("MONTH", Sequelize.col("startDate"))],
+      });
+      let datqaPar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      listWorkPar.forEach((month) => {
+        datqaPar[month.month - 1] = month.count;
+      });
+
+      const listWorkReq = await db.ListUser.findAll({
+        raw: true,
+        nest: true,
+        attributes: [
+          [Sequelize.fn("MONTH", Sequelize.col("startDate")), "month"],
+          [Sequelize.fn("COUNT", "*"), "count"],
+        ],
+        where: {
+          status: 0,
+        },
+        include: [
+          {
+            model: db.VolunteerWork,
+            as: "work",
+            where: {
+              startDate: Sequelize.literal(`YEAR(startDate) = ${year}`),
+            },
+          },
+        ],
+        group: [Sequelize.fn("MONTH", Sequelize.col("startDate"))],
+      });
+      let datqaReq = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      listWorkReq.forEach((month) => {
+        datqaReq[month.month - 1] = month.count;
+      });
+
+      return resolve({
+        errCode: 0,
+        errMessage: "Succses!",
+        data: {
+          Par: datqaPar,
+          Req: datqaReq,
+        },
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 export default {
   getWork,
   getWorkUserReg,
@@ -573,4 +641,5 @@ export default {
   deleteUserOfListWork,
   getVolunteerWork,
   getWorkAndCountResquest,
+  getDataStatisticalParReq,
 };
