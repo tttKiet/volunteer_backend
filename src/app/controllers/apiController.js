@@ -205,6 +205,23 @@ class apiController {
     });
     res.status(200).json(response);
   }
+
+  // [GET] api/v1/statistical/student-par-req
+  async handleStatisticalPost(req, res, next) {
+    const response = await apiPostService.getDataStatisticalPost({
+      userId: req.query.userId,
+    });
+    res.status(200).json(response);
+  }
+
+  // [DELETE] api/v1/post/delete
+  async handleDeletePost(req, res, next) {
+    const response = await apiPostService.deletePostById({
+      id: req.query.id,
+    });
+    res.status(200).json(response);
+  }
+
 }
 
 export default new apiController();

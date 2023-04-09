@@ -21,6 +21,7 @@ router.get(
   "/v1/statistical/student-par-req",
   apiController.handleStatisticalParReq
 );
+router.get("/v1/statistical/post", apiController.handleStatisticalPost);
 router.post("/v1/work/register", apiController.handleRegisterWork);
 router.post(
   "/v1/post",
@@ -31,5 +32,6 @@ router.post("/v1/login", apiController.handleLogin);
 router.post("/v1/work/create", apiController.handleCreateWork);
 router.patch("/v1/work-browse", apiController.handleBrowse);
 router.delete("/v1/listUser/delete", apiController.handleDeleteListUser);
+router.delete("/v1/post/delete", apiController.handleDeletePost);
 
 export default router;

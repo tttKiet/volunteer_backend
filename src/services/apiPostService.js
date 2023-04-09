@@ -1,4 +1,6 @@
 import db from "../app/models";
+import { Sequelize } from "../app/models";
+import uploadClound from "../middleWare/cloundiary";
 
 const getPost = ({ userId, limit = 8 }) => {
   let conditions = {};
@@ -107,4 +109,91 @@ const checkUserData = (userId) => {
   });
 };
 
-export default { getPost, upPost };
+const getDataStatisticalPost = ({ userId }) => {
+  if (!userId) {
+    return {
+      errCode: 1,
+      errMessage: "Người dùng không tồn trại (UserId)!",
+    };
+  }
+  return new Promise(async (resolve, reject) => {
+    try {
+      const dataUser = await db.Post.findAll({
+        raw: true,
+        nest: true,
+        attributes: [[Sequelize.fn("COUNT", "*"), "count"]],
+        include: [
+          {
+            model: db.User,
+            as: "user",
+            where: {
+              id: userId,
+            },
+          },
+        ],
+      });
+
+      const dataTotal = await db.Post.findAll({
+        raw: true,
+        nest: true,
+        attributes: [[Sequelize.fn("COUNT", "*"), "count"]],
+      });
+
+      return resolve({
+        errCode: 0,
+        errMessage: "Succses!",
+        data: [dataUser[0].count, dataTotal[0].count],
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const deletePostById = ({ id }) => {
+  if (!id) {
+    return {
+      errCode: 2,
+      errMessage: "Err! Không có id truyền vào",
+    };
+  }
+  // https://res.cloudinary.com/djvlxywoe/image/upload/v1681002913/nienluan_image-post/a4wuiwqxnceeornkw9hn.jpg
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await db.Post.findOne({ where: { id: id } });
+      let imgLink;
+
+      if (post) {
+        imgLink = post.dataValues.linkImage;
+        post.destroy();
+
+        resolve({
+          errCode: 0,
+          errMessage: "Ok!",
+          data: post,
+        });
+
+        // Lay ten anh
+        const strArr = imgLink.split("/");
+        const strSplipDot = strArr[strArr.length - 1].split(".");
+        const nameImg = "nienluan_image-post/" + strSplipDot[0];
+
+        return uploadClound.storage.cloudinary.uploader.destroy(
+          nameImg,
+          (err, result) => {
+            console.log(result);
+            console.log(err);
+          }
+        );
+      }
+
+      return resolve({
+        errCode: 1,
+        errMessage: "không tìm thấy bài post!",
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+export default { getPost, upPost, getDataStatisticalPost, deletePostById };
