@@ -226,10 +226,6 @@ const getNameWork = async ({
   } else {
     if (softByUser === 1 && userId) {
       var array = await getWorkUserReg({ userId: userId });
-      console.log(
-        "----------------- sad sa  --------------------------------------",
-        array
-      );
 
       if (array.data.length > 0) {
         order = [
@@ -392,8 +388,6 @@ const createWork = (data) => {
 };
 
 const registerWork = (workId, userId) => {
-  console.log("Register", workId, userId);
-
   return new Promise(async (resolve, reject) => {
     // Kiểm tra công việc và người dùng có tồn tại hay không
     const work = db.VolunteerWork.findOne({
@@ -523,7 +517,15 @@ const deleteUserOfListWork = ({ id, userId }) => {
               "Không thể hủy tham gia công việc này trước 3 ngày! Vui lòng liên hệ các Admin nếu có trường hợp khẩn!",
           });
         } else {
-          await listUser.destroy();
+          const idWork = listUser.dataValues.workId;
+          const work = await db.VolunteerWork.findByPk(idWork);
+          const resVolunteerWork = await work.decrement("curStudent", {
+            by: 1,
+          });
+
+          if (resVolunteerWork) {
+            await listUser.destroy();
+          }
         }
 
         resolve({

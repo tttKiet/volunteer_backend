@@ -15,6 +15,7 @@ router.get("/v1/work/browsed", apiController.handleGetWorkBrowsed);
 router.get("/v1/work", apiController.handleGetWork);
 router.get("/v1/work-user", apiController.handleGetWorkUser);
 router.get("/v1/work-user-register", apiController.handleGetWorkUserRegister);
+router.get("/v1/post/:id", apiController.handlegetPostById);
 router.get("/v1/post", apiController.handleGetPost);
 router.get("/v1/get-all-post", apiController.handleGetAllPost);
 router.get(
@@ -28,8 +29,15 @@ router.post(
   uploadClound.single("image"),
   apiController.handleUpPost
 );
+
 router.post("/v1/login", apiController.handleLogin);
 router.post("/v1/work/create", apiController.handleCreateWork);
+
+router.patch(
+  "/v1/post/:id",
+  uploadClound.single("image"),
+  apiController.handleUpDatePost
+);
 router.patch("/v1/work-browse", apiController.handleBrowse);
 router.delete("/v1/listUser/delete", apiController.handleDeleteListUser);
 router.delete("/v1/post/delete", apiController.handleDeletePost);
